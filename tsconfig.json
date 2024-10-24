@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es6", // Disarankan menggunakan target ES6 atau lebih
+    "lib": ["dom", "dom.iterable", "esnext"], // "esnext" sudah mencakup fitur modern
+    "allowJs": true, // Jika kamu ingin tetap menggunakan file JS di proyek
+    "skipLibCheck": true, // Mengabaikan cek tipe pada library untuk kecepatan
+    "strict": true, // Mengaktifkan strict mode TypeScript
+    "forceConsistentCasingInFileNames": true, // Membuat case-sensitive pada nama file
+    "noEmit": true, // Tidak meng-output file JS, hanya untuk pengecekan tipe
+    "esModuleInterop": true, // Membantu impor modul ES6 ke dalam CommonJS
+    "module": "esnext", // Menggunakan modul ES untuk aplikasi modern
+    "moduleResolution": "node", // Resolusi modul standar di Node.js
+    "resolveJsonModule": true, // Untuk bisa impor file JSON
+    "isolatedModules": true, // Untuk meningkatkan dukungan linting di file non-modular
+    "jsx": "preserve", // Mengaktifkan JSX modern (sesuai rekomendasi Next.js)
+    "baseUrl": ".", // Menetapkan base path sebagai root
+    "paths": {
+      "@/components/*": ["src/components/*"], // Alias path untuk komponen
+      "@/interfaces/*": ["src/interfaces/*"], // Alias path untuk interface
+      "@/types/*": ["types/*"]
+    },
+    "incremental": true
+  },
+  "include": [
+    "next-env.d.ts", // Termasuk definisi Next.js
+    "**/*.ts", // Termasuk semua file TypeScript
+    "**/*.tsx" // Termasuk semua file TSX (TypeScript + JSX)
+  ],
+  "exclude": ["node_modules"], // Kecualikan folder node_modules
+  "ts-node": {
+    "files": true // Opsi tambahan untuk mendukung ts-node jika dibutuhkan
+  }
+}
