@@ -6,6 +6,7 @@ import CustomSnackbar from "@/components/CustomSnackbar"; // Import CustomSnackb
 import { getUsers, createUser, updateUser, deleteUser } from "../services/api";
 import { User } from "../types/types";
 import Navbar from "../components/navbar";
+import { Margin } from "@mui/icons-material";
 
 const Home: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); // State untuk menyimpan daftar pengguna
