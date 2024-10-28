@@ -11,7 +11,7 @@ import {
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (userData: { name: string; email: string }) => void; // Update to accept user data
   formData: { name: string; email: string };
   setFormData: React.Dispatch<
     React.SetStateAction<{ name: string; email: string }>
@@ -25,18 +25,18 @@ const UserForm: React.FC<Props> = ({
   formData,
   setFormData,
 }) => {
-  const [emailError, setEmailError] = useState(""); // State untuk error email
-  const [nameError, setNameError] = useState(""); // State untuk error name
+  const [emailError, setEmailError] = useState("");
+  const [nameError, setNameError] = useState("");
 
-  // Fungsi untuk memvalidasi format email
+  // Validate email format
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Fungsi untuk memvalidasi name (tidak boleh ada karakter khusus)
+  // Validate name (no special characters)
   const validateName = (name: string): boolean => {
-    const nameRegex = /^[a-zA-Z0-9 ]+$/; // Hanya huruf, angka, dan spasi
+    const nameRegex = /^[a-zA-Z0-9 ]+$/; // Only letters, numbers, and spaces
     return nameRegex.test(name);
   };
 
@@ -44,6 +44,7 @@ const UserForm: React.FC<Props> = ({
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
+    // Validate email field
     if (name === "email") {
       if (!validateEmail(value)) {
         setEmailError("Invalid email format");
@@ -52,6 +53,7 @@ const UserForm: React.FC<Props> = ({
       }
     }
 
+    // Validate name field
     if (name === "name") {
       if (!validateName(value)) {
         setNameError("Name cannot contain special characters");
@@ -64,7 +66,7 @@ const UserForm: React.FC<Props> = ({
   };
 
   const handleSave = () => {
-    // Cek apakah form valid sebelum menyimpan
+    // Validate the form before saving
     if (!validateEmail(formData.email)) {
       setEmailError("Invalid email format");
       return;
@@ -74,10 +76,10 @@ const UserForm: React.FC<Props> = ({
       return;
     }
 
-    onSave(); // Jika validasi lolos, lanjutkan dengan save
+    onSave(formData); // Pass formData to onSave
   };
 
-  // Tombol Save hanya aktif jika tidak ada error dan form diisi dengan benar
+  // Check if the form is valid
   const isFormValid = () => {
     return (
       formData.name.trim() !== "" &&
@@ -98,8 +100,8 @@ const UserForm: React.FC<Props> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
-          error={!!nameError} // Jika ada pesan error, berikan indikator error
-          helperText={nameError} // Tampilkan pesan error di bawah input
+          error={!!nameError}
+          helperText={nameError}
         />
         <TextField
           label="Email"
@@ -108,8 +110,8 @@ const UserForm: React.FC<Props> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
-          error={!!emailError} // Jika ada pesan error, berikan indikator error
-          helperText={emailError} // Tampilkan pesan error di bawah input
+          error={!!emailError}
+          helperText={emailError}
         />
       </DialogContent>
       <DialogActions>

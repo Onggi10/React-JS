@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -10,156 +10,175 @@ import {
   IconButton,
   TablePagination,
   styled,
-  tableCellClasses,
+  TextField,
+  Box,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Delete, Edit, Add as AddIcon } from "@mui/icons-material";
+import { getUsers, deleteUser } from "../services/api";
 import { User } from "../types/types";
 
-// Styled components untuk tabel
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
 interface Props {
-  users: User[];
-  onEdit: (user: User) => void;
-  onDelete: (id: number) => void;
+  users: User[]; // Perbarui prop untuk menerima users dari komponen induk
+  setCurrentUser: (user: User | null) => void;
+  setFormData: React.Dispatch<React.SetStateAction<Omit<User, "id">>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSnackbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSnackbarMessage: React.Dispatch<React.SetStateAction<string>>;
+  setSnackbarSeverity: React.Dispatch<
+    React.SetStateAction<"success" | "error" | "warning" | "info">
+  >;
+  handleOpenForm: () => void;
+  reloadUsers: () => Promise<void>; // Tambahkan prop untuk memuat ulang data dari induk
 }
 
-const UserTable: React.FC<Props> = ({ users, onEdit, onDelete }) => {
-  // State untuk pagination
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Default: 5 baris per halaman
+const StyledTableCell = styled(TableCell)({
+  fontWeight: "bold",
+});
 
-  // State untuk sorting
+const UserTable: React.FC<Props> = ({
+  users,
+  setCurrentUser,
+  setFormData,
+  setOpen,
+  setSnackbarOpen,
+  setSnackbarMessage,
+  setSnackbarSeverity,
+  handleOpenForm,
+  reloadUsers,
+}) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [sortColumn, setSortColumn] = useState<keyof User>("id");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Fungsi untuk mengubah halaman
+  // Perbarui data tabel saat props users berubah
+  useEffect(() => {
+    setPage(0); // Kembali ke halaman pertama saat data baru dimuat
+  }, [users]);
+
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  // Fungsi untuk mengubah jumlah baris per halaman
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10)); // Update jumlah baris per halaman
-    setPage(0); // Reset ke halaman pertama
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
-  // Fungsi untuk mengubah sorting
   const handleSort = (column: keyof User) => {
     const isAsc = sortColumn === column && sortDirection === "asc";
     setSortDirection(isAsc ? "desc" : "asc");
     setSortColumn(column);
   };
 
-  // Sorting data pengguna
-  const sortedUsers = [...users].sort((a, b) => {
-    if (a[sortColumn] < b[sortColumn]) {
-      return sortDirection === "asc" ? -1 : 1;
+  const handleEdit = (user: User) => {
+    setCurrentUser(user);
+    setFormData({ name: user.name, email: user.email });
+    setOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteUser(id);
+      setSnackbarMessage("User deleted successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      await reloadUsers(); // Panggil ulang loadUsers dari props untuk sinkronisasi
+    } catch (error) {
+      setSnackbarMessage("Failed to delete user!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
-    if (a[sortColumn] > b[sortColumn]) {
-      return sortDirection === "asc" ? 1 : -1;
-    }
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (a[sortColumn] < b[sortColumn]) return sortDirection === "asc" ? -1 : 1;
+    if (a[sortColumn] > b[sortColumn]) return sortDirection === "asc" ? 1 : -1;
     return 0;
   });
 
-  // Potong data pengguna berdasarkan halaman dan jumlah baris yang dipilih
   const paginatedUsers = sortedUsers.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
   return (
-    <>
+    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "20px" }}>
+      <Box display="flex" alignItems="center" gap={2} marginBottom={2}>
+        <TextField
+          label="Search by Name or Email"
+          variant="outlined"
+          margin="normal"
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Box display="flex" alignItems="center">
+          <IconButton size="large" color="success" onClick={handleOpenForm}>
+            <AddIcon />
+          </IconButton>
+          <Box component="span" ml={1} fontWeight="bold">
+            {" "}
+            {/* ml={1} for spacing */}
+            Add User
+          </Box>
+        </Box>
+      </Box>
+
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell
-                onClick={() => handleSort("id")}
-                style={{ cursor: "pointer" }}
-              >
-                ID{" "}
-                {sortColumn === "id"
-                  ? sortDirection === "asc"
-                    ? "↑"
-                    : "↓"
-                  : ""}
+              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell onClick={() => handleSort("name")}>
+                Name
               </StyledTableCell>
-              <StyledTableCell
-                onClick={() => handleSort("name")}
-                style={{ cursor: "pointer" }}
-              >
-                Name{" "}
-                {sortColumn === "name"
-                  ? sortDirection === "asc"
-                    ? "↑"
-                    : "↓"
-                  : ""}
+              <StyledTableCell onClick={() => handleSort("email")}>
+                Email
               </StyledTableCell>
-              <StyledTableCell
-                onClick={() => handleSort("email")}
-                style={{ cursor: "pointer" }}
-              >
-                Email{" "}
-                {sortColumn === "email"
-                  ? sortDirection === "asc"
-                    ? "↑"
-                    : "↓"
-                  : ""}
-              </StyledTableCell>
-              <StyledTableCell>Actions</StyledTableCell>
+              <StyledTableCell align="center">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedUsers.map((user) => (
-              <StyledTableRow key={user.id}>
-                <StyledTableCell>{user.id}</StyledTableCell>
-                <StyledTableCell>{user.name}</StyledTableCell>
-                <StyledTableCell>{user.email}</StyledTableCell>
-                <StyledTableCell>
-                  <IconButton onClick={() => onEdit(user)}>
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell align="center">
+                  <IconButton onClick={() => handleEdit(user)} color="primary">
                     <Edit />
                   </IconButton>
-                  <IconButton onClick={() => onDelete(user.id)}>
+                  <IconButton
+                    onClick={() => handleDelete(user.id)}
+                    color="error"
+                  >
                     <Delete />
                   </IconButton>
-                </StyledTableCell>
-              </StyledTableRow>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Komponen Pagination */}
       <TablePagination
         component="div"
-        count={users.length} // Total jumlah user
-        page={page} // Halaman saat ini
-        onPageChange={handleChangePage} // Fungsi untuk ganti halaman
-        rowsPerPage={rowsPerPage} // Jumlah baris per halaman
-        onRowsPerPageChange={handleChangeRowsPerPage} // Fungsi untuk ganti jumlah baris
-        rowsPerPageOptions={[5, 10, 25]} // Opsi jumlah baris per halaman
+        count={sortedUsers.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 25]}
       />
-    </>
+    </div>
   );
 };
 
