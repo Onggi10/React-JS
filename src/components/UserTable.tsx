@@ -14,7 +14,7 @@ import {
   Box,
 } from "@mui/material";
 import { Delete, Edit, Add as AddIcon } from "@mui/icons-material";
-import { getUsers, deleteUser } from "../services/api";
+import { deleteUser } from "../services/api";
 import { User } from "../types/types";
 
 interface Props {
