@@ -5,13 +5,12 @@ class EventBind extends Component {
     super(props);
 
     this.state = {
-      message: "Hello",
+      message: "Silahkan Click Button Dibawah Ini",
     };
   }
 
-  clickHandler(){
+  clickHandler() {
     console.log("Tombol Di Klik");
-    
   }
   render() {
     return (
