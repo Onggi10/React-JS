@@ -1,16 +1,11 @@
 import "./App.css";
-import React, { Component } from "react";
+import React from "react";
 import Greet from "./Components/Greet";
-import Welcome from "./Components/Welcome";
-import Love from './Components/Love'
-
 
 function App() {
   return (
     <div className="App">
-      <Greet />
-      <Love />
-      <Welcome />
+      <Greet names="Onggi" username="Giw" color=" Cyan" />
     </div>
   );
 }
