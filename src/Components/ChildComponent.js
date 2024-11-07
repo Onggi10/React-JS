@@ -1,10 +1,29 @@
-import React from 'react'
+import React from "react";
+import PropTypes from "prop-types";
 
-function ChildComponent() {
-  return (
-    <div>
-      
-    </div>
-  )
+class ChildComponent extends React.Component {
+  constructor(props) {
+    super(props)
+  
+    this.state = {
+      Message: "Welcome to My Website",
+    }
+  }
+  
+
+  render() {
+    return (
+      <div>
+        <div><h1>{this.Message}</h1></div>
+        <button onClick={this.props.greetHandler}>Greet Parent</button>
+      </div>
+    );
+  }
 }
-export default ChildComponent
+
+// Menambahkan validasi PropTypes untuk greetHandler
+ChildComponent.propTypes = {
+  greetHandler: PropTypes.func.isRequired,
+};
+
+export default ChildComponent;

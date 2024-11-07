@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import ChildComponent from "./ChildComponent";
 
 class ParentComponent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      parentName: "Parent",
+      parentName: "Welcome",
     };
 
     this.greetParent = this.greetParent.bind(this);
@@ -18,7 +19,7 @@ class ParentComponent extends Component {
   render() {
     return (
       <div>
-        <button onClick={this.greetParent}>Click Here</button>
+        <ChildComponent greetHandler={this.greetParent} />
       </div>
     );
   }
