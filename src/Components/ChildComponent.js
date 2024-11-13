@@ -3,19 +3,20 @@ import PropTypes from "prop-types";
 
 class ChildComponent extends React.Component {
   constructor(props) {
-    super(props)
-  
+    super(props);
+
     this.state = {
-      Message: "Welcome to My Website",
-    }
+      Message: "Welcome To My Website",
+    };
   }
-  
 
   render() {
     return (
       <div>
-        <div><h1>{this.Message}</h1></div>
-        <button onClick={this.props.greetHandler}>Greet Parent</button>
+        <div>
+          <h1>{this.state.Message}</h1>
+        </div>
+        <button onClick={this.props.greetHandler}>Next</button>
       </div>
     );
   }

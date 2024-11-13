@@ -1,12 +1,11 @@
 import "./App.css";
 import React from "react";
-import EventBind from "./Components/EventBind";
-import ParentComponent from "./Components/ParentComponent";
+import NameList from "./Components/NameList";
 
 function App() {
   return (
     <div className="App">
-      <ParentComponent />
+      <NameList />
     </div>
   );
 }
