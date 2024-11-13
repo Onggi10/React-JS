@@ -1,7 +1,8 @@
 import React from "react";
-import Person from "./Person";
 
 function NameList() {
+  const name = ["Onggi", "Jejes", "Silvi", "Sanjaya"];
+
   const person = [
     {
       id: 1,
@@ -10,24 +11,24 @@ function NameList() {
       skill: "html",
     },
     {
-      id: 1,
+      id: 2,
       name: "Onggi",
       age: 22,
       skill: "css",
     },
     {
-      id: 1,
+      id: 3,
       name: "Sanjaya",
       age: 24,
       skill: "Next JS",
     },
   ];
 
-  const personList = person.map(person => <Person person={person}/>);
-  return (
-    <div>
-      {personList}
-    </div>
-  );
+  const nameList = name.map((name, index) => (
+    <h1 key={index}>
+      {index} {name}
+    </h1>
+  ));
+  return <div>{nameList}</div>;
 }
 export default NameList;

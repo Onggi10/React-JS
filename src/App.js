@@ -1,11 +1,11 @@
 import "./App.css";
 import React from "react";
-import NameList from "./Components/NameList";
+import Form from "./Components/Form";
 
 function App() {
   return (
     <div className="App">
-      <NameList />
+      <Form />
     </div>
   );
 }
