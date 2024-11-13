@@ -1,5 +1,3 @@
-// Basic of form handling
-
 import React, { Component } from "react";
 
 class Form extends Component {
@@ -15,31 +13,37 @@ class Form extends Component {
 
   handleUsernameChange = (event) => {
     this.setState({
-      username: event.targetValue,
+      username: event.target.value, // Perbaikan di sini
     });
   };
 
   handleCommentChange = (event) => {
     this.setState({
-      comment: event.targetValue,
+      comment: event.target.value, // Perbaikan di sini
     });
   };
 
   handleTopicChange = (event) => {
     this.setState({
-      topic: event.targetValue,
+      topic: event.target.value, // Perbaikan di sini
     });
+  };
+
+  handleSubmit = (event) => {
+    // event.preventDefault(); // Agar form tidak langsung refresh setelah submit
+    alert(`${this.state.username} ${this.state.comment} ${this.state.topic}`);
   };
 
   render() {
     return (
-      <form>
+      <form onSubmit={this.handleSubmit}>
         <div>
           <label>User ID : </label>
           <input
             type="text"
             value={this.state.username}
             onChange={this.handleUsernameChange}
+            placeholder="Silahkan Masukkan ID Anda"
           />
         </div>
 
@@ -48,6 +52,7 @@ class Form extends Component {
           <textarea
             value={this.state.comment}
             onChange={this.handleCommentChange}
+            placeholder="Silahkan Masukkan Pesan Anda"
           ></textarea>
         </div>
 
@@ -59,6 +64,8 @@ class Form extends Component {
             <option value="react">React</option>
           </select>
         </div>
+
+        <button type="submit">Save</button>
       </form>
     );
   }
