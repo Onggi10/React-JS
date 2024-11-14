@@ -1,8 +1,11 @@
 import "./App.css";
 import React from "react";
-import Form from "./Components/Form";
+import Refs from "./Components/Refs";
 
 export default function Home() {
-  return <div><Form /></div>;
+  return (
+    <div className="App-header">
+      <Refs />
+    </div>
+  );
 }
-
